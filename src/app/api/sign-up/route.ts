@@ -74,6 +74,7 @@ export async function POST(request: Request) {
         )
 
         if(!emailResponse.success){
+            console.error("Email not sent:", emailResponse.message)
             return Response.json({
                 success: false,
                 message: emailResponse.message || "Failed to send verification email. Please try again later."
@@ -85,7 +86,7 @@ export async function POST(request: Request) {
                 success: true,
                 message: "Registration successful! Please check your email to verify your account."
             },{
-                status: 500
+                status: 201
             })
 
     } catch (error) {
