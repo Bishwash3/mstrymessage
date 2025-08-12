@@ -63,3 +63,57 @@ export async function POST(request: Request) {
         
     }
 }
+
+export async function GET(request: Request) {
+     dbConnect()
+
+    const session = await getServerSession(authOptions)
+    const user: User = session?.user
+
+    if(!session || !session.user){
+        return Response.json(
+            { success: false,
+              message: "You must be logged in to accept messages." 
+            },
+            {
+                status: 401
+            }
+        )
+    }
+
+    const userId = user.id
+
+    const foundUser = await UserModel.findById(userId)
+
+ try {
+       if (!foundUser) {
+           return Response.json(
+               { success: false,
+                 message: "User not found."
+               },
+               {
+                   status: 404
+               }
+           )
+       }
+   
+       return Response.json(
+           { success: true,
+             isAcceptingMessages: foundUser.isAcceptingMessage,
+           },
+           {
+               status: 200
+           }
+       )
+ } catch (error) {
+         console.log("Error fetching user acceptance status:", error)
+         return Response.json(
+              { success: false,
+                 message: "Failed to fetch acceptance status."
+              },
+              {
+                status: 500
+              }
+         )
+ }
+}
